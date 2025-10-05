@@ -12,11 +12,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { registerSchema } from "@/schemas/user.schemas";
 import { createUser } from "@/actions/user";
 import { toast } from "sonner";
-import { useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState<boolean>(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -27,22 +27,26 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
     },
   });
 
-  const onSubmit = (values: z.infer<typeof registerSchema>) => {
-    
-    startTransition(async () => {
-      const { status, data, message } = await createUser(values);
-      if (status === 200) {
-        toast.success(message);
-        form.reset();
-        router.push("/");
-      } else {
-        if (message === "Email already exists") {
-          form.setError("email", { message });
-        } else {
-          toast.error(message);
-        }
-      }
-    });
+  const onSubmit = async (values: z.infer<typeof registerSchema>) => {
+    // try {
+    //   setIsPending(true);
+    //   const { status, data, message } = await createUser(values);
+    //   if (status === 200) {
+    //     // toast(message);
+    //     form.reset();
+    //     router.push("/");
+    //   } else {
+    //     if (message === "Email already exists") {
+    //       form.setError("email", { message });
+    //     } else {
+    //       // toast(message);
+    //     }
+    //   }
+    // } catch (error) {
+    //   // toast("Error registering user");
+    // } finally {
+    //   setIsPending(false);
+    // }
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

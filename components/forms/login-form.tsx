@@ -10,8 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { loginSchema } from "@/schemas/user.schemas";
+import { loginUser } from "@/actions/user";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+  const [isPending, setIsPending] = useState<boolean>(false);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -20,9 +27,28 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     },
   });
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    // TODO: API ga yuborish yoki action chaqirish
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    // try {
+    //   setIsPending(true);
+    //   console.log("asd");
+
+    //   const { status, data, message } = await loginUser(values.email, values.password);
+    //   if (status === 200) {
+    //     // toast(message);
+    //     form.reset();
+    //     router.push("/");
+    //   } else {
+    //     if (message === "Email already exists") {
+    //       form.setError("email", { message });
+    //     } else {
+    //       // toast(message);
+    //     }
+    //   }
+    // } catch (error) {
+    //   // toast("Error registering user");
+    // } finally {
+    //   setIsPending(false);
+    // }
   };
 
   return (
@@ -47,8 +73,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 {form.formState.errors.password && <span className="text-sm text-red-500">{form.formState.errors.password.message}</span>}
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full" disabled={isPending}>
+                  {isPending ? "Yuklanmoqda..." : "Login"}
                 </Button>
               </div>
             </div>
